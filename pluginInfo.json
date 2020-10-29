@@ -1,0 +1,26 @@
+{
+	"repoName": "show-on-demand",
+	"name": "Show On Demand",
+	"author": "Joe Harrison (joeharrison714)",
+	"description": "This allows the show to be started on demand via text message",
+	"homeURL": "https://github.com/joeharrison714/show-on-demand-plugin",
+	"srcURL": "https://github.com/joeharrison714/show-on-demand-plugin.git",
+	"bugURL": "https://github.com/joeharrison714/show-on-demand-plugin/issues",
+	"allowUpdates": 1,
+	"versions": [
+		{
+			"minFPPVersion": "4.0",
+			"maxFPPVersion": "0",
+			"branch": "master",
+			"sha": "",
+			"dependencies": {
+			    "plugins": [
+				],
+			    "packages": [
+				],
+				"scripts": [
+				]
+			}
+		}
+	]
+}
