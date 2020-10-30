@@ -19,7 +19,7 @@ Traffic to my display is fairly light in early December, and for some unknown re
 
 ## How to set up:
 - Configure voip.ms account
-  - Create a voip.ms account
+  - Create a <a href="https://voip.ms/en/invite/MTM1ODE5">voip.ms</a> account (This is a referral link. If you use it we both get $10!)
   - Order a DID number (aka phone number)
   - For routing, you can choose "System", "Hang up"
   - Edit the DID and ensure SMS messages are enabled

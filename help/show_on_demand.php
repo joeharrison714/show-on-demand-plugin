@@ -4,7 +4,7 @@
 <ol>
 <li>Configure voip.ms account</li>
     <ol>
-        <li>Create a voip.ms account</li>
+        <li>Create a <a href="https://voip.ms/en/invite/MTM1ODE5">voip.ms</a> account (This is a referral link. If you use it we both get $10!)</li>
         <li>Order a DID number (aka phone number)</li>
         <li>For routing, you can choose "System", "Hang up"</li>
         <li>Edit the DID and ensure SMS messages are enabled</li>
