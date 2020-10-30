@@ -43,7 +43,7 @@ if($sodEnabled == 1) {
             throw new Exception('No voip.ms username specified.');
         }
 
-        logEntry("Voip.ms password: " . $voipmsApiPassword);
+        logEntry("Voip.ms password: " . "<<redacted>>");
         if (strlen($voipmsApiPassword)==0){
             throw new Exception('No voip.ms password specified.');
         }
@@ -74,11 +74,7 @@ if($sodEnabled == 1) {
                 if ($messageResponse->status == "success"){
                     $startShowForContacts = processMessages($messageResponse);
 
-                    logEntry("Count: " . count($startShowForContacts));
-
                     $shouldStart = count($startShowForContacts) > 0;
-
-                    logEntry("Should start: " .$shouldStart);
 
                     if ($shouldStart) {
                         $currentlyPlaying = $fppStatus->current_playlist->playlist;
