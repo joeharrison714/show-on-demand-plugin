@@ -66,7 +66,7 @@ foreach(scandir($playlistDirectory) as $pFile)
 		<h4></h4>
 	</div>
 
-
+<p>Press F1 for setup instructions</p>
 <table cellspacing="5">
 <tr>
 	<th style="text-align: left">Enable Show On Demand</th>
