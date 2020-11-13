@@ -9,19 +9,19 @@ $pluginConfigFile = $settings['configDirectory'] . "/plugin." .$pluginName;
 $pluginSettings = parse_ini_file($pluginConfigFile);
 
 #$pluginVersion = urldecode($pluginSettings['pluginVersion']);
-$sodEnabled = urldecode($pluginSettings['show_on_demand_enabled']);
+$sodEnabled = $pluginSettings['show_on_demand_enabled'];
 $sodEnabled = $sodEnabled == "true" ? true : false;
 
 $api_base_path = "https://voip.ms/api/v1";
 $oldest_message_age = 180;
 
-$onDemandPlaylist = urldecode($pluginSettings['on_demand_playlist']);
-$mainPlaylist = urldecode($pluginSettings['main_playlist']);
-$voipmsApiUsername = urldecode($pluginSettings['voipms_api_username']);
-$voipmsApiPassword = urldecode($pluginSettings['voipms_api_password']);
-$startCommand = urldecode($pluginSettings['start_command']);
-$messageSuccess = urldecode($pluginSettings['message_success']);
-$messageNotStarted = urldecode($pluginSettings['message_not_started']);
+$onDemandPlaylist = $pluginSettings['on_demand_playlist'];
+$mainPlaylist = $pluginSettings['main_playlist'];
+$voipmsApiUsername = $pluginSettings['voipms_api_username'];
+$voipmsApiPassword = $pluginSettings['voipms_api_password'];
+$startCommand = $pluginSettings['start_command'];
+$messageSuccess = $pluginSettings['message_success'];
+$messageNotStarted = $pluginSettings['message_not_started'];
 
 if($sodEnabled == 1) {
     echo "Starting Show On Demand Plugin\n";

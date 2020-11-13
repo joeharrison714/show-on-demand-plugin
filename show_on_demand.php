@@ -15,46 +15,42 @@ if (strlen(urldecode($pluginSettings['show_on_demand_enabled']))<1){
 }
 
 if (strlen(urldecode($pluginSettings['on_demand_playlist']))<1){
-	WriteSettingToFile("on_demand_playlist",urlencode(""),$pluginName);
+	WriteSettingToFile("on_demand_playlist","",$pluginName);
 	$madeChange = true;
 }
 
 if (strlen(urldecode($pluginSettings['main_playlist']))<1){
-	WriteSettingToFile("main_playlist",urlencode(""),$pluginName);
+	WriteSettingToFile("main_playlist","",$pluginName);
 	$madeChange = true;
 }
 
 if (strlen(urldecode($pluginSettings['voipms_api_username']))<1){
-	WriteSettingToFile("voipms_api_username",urlencode(""),$pluginName);
+	WriteSettingToFile("voipms_api_username","",$pluginName);
 	$madeChange = true;
 }
 
 if (strlen(urldecode($pluginSettings['voipms_api_password']))<1){
-	WriteSettingToFile("voipms_api_password",urlencode(""),$pluginName);
+	WriteSettingToFile("voipms_api_password","",$pluginName);
 	$madeChange = true;
 }
 
 if (strlen(urldecode($pluginSettings['start_command']))<1){
-	WriteSettingToFile("start_command",urlencode("START"),$pluginName);
+	WriteSettingToFile("start_command","START",$pluginName);
 	$madeChange = true;
 }
 
 if (strlen(urldecode($pluginSettings['message_success']))<1){
-	WriteSettingToFile("message_success",urlencode("Message received. The show will begin momentarily."),$pluginName);
+	WriteSettingToFile("message_success","Message received. The show will begin momentarily.",$pluginName);
 	$madeChange = true;
 }
 
 if (strlen(urldecode($pluginSettings['message_not_started']))<1){
-	WriteSettingToFile("message_not_started",urlencode("Sorry, the show cannot be started right now."),$pluginName);
+	WriteSettingToFile("message_not_started","Sorry, the show cannot be started right now.",$pluginName);
 	$madeChange = true;
 }
 
 if ($madeChange) {
 	$pluginSettings = parse_ini_file($pluginConfigFile);
-}
-
-foreach ($pluginSettings as $key => $value) { 
-	${$key} = urldecode($value);
 }
 
 $playlists = Array();
@@ -118,7 +114,7 @@ foreach(scandir($playlistDirectory) as $pFile)
 <td>
 <?
 //function PrintSettingTextSaved($setting, $restart = 1, $reboot = 0, $maxlength = 32, $size = 32, $pluginName = "", $defaultValue = "", $callbackName = "", $changedFunction = "", $inputType = "text", $sData = Array())
-	PrintSettingTextSaved("start_command", $restart = 1, $reboot = 0, $maxlength = 32, $size = 32, $pluginName = $pluginName, $defaultValue = "START");
+	PrintSettingTextSaved("start_command", $restart = 1, $reboot = 0, $maxlength = 32, $size = 32, $pluginName = $pluginName, $defaultValue = "");
 ?>
 </td>
 </tr>
