@@ -31,16 +31,16 @@ if (strlen(urldecode($pluginSettings['start_command']))<1){
 	WriteSettingToFile("start_command",urlencode("START"),$pluginName);
 }
 
-foreach ($pluginSettings as $key => $value) { 
-	${$key} = urldecode($value);
+if (strlen(urldecode($pluginSettings['message_success']))<1){
+	WriteSettingToFile("message_success",urlencode("Message received. The show will begin momentarily."),$pluginName);
 }
 
-// if (strlen(urldecode($pluginSettings['message_success']))<1){
-// 	WriteSettingToFile("message_success",urlencode("Message received. The show will begin momentarily."),$pluginName);
-// }
+if (strlen(urldecode($pluginSettings['message_not_started']))<1){
+	WriteSettingToFile("message_not_started",urlencode("Sorry, the show cannot be started right now."),$pluginName);
+}
 
-// if (strlen(urldecode($pluginSettings['message_not_started']))<1){
-// 	WriteSettingToFile("message_not_started",urlencode("Sorry, the show cannot be started right now."),$pluginName);
+// foreach ($pluginSettings as $key => $value) { 
+// 	${$key} = urldecode($value);
 // }
 
 $playlists = Array();
@@ -114,7 +114,7 @@ foreach(scandir($playlistDirectory) as $pFile)
 <td>
 <?
 //function PrintSettingTextSaved($setting, $restart = 1, $reboot = 0, $maxlength = 32, $size = 32, $pluginName = "", $defaultValue = "", $callbackName = "", $changedFunction = "", $inputType = "text", $sData = Array())
-	PrintSettingTextSaved("message_success", $restart = 1, $reboot = 0, $maxlength = 160, $size = 100, $pluginName = $pluginName, $defaultValue = "Message received. The show will begin momentarily.");
+	PrintSettingTextSaved("message_success", $restart = 1, $reboot = 0, $maxlength = 160, $size = 100, $pluginName = $pluginName, $defaultValue = "");
 ?>
 </td>
 </tr>
@@ -125,7 +125,7 @@ foreach(scandir($playlistDirectory) as $pFile)
 <td>
 <?
 //function PrintSettingTextSaved($setting, $restart = 1, $reboot = 0, $maxlength = 32, $size = 32, $pluginName = "", $defaultValue = "", $callbackName = "", $changedFunction = "", $inputType = "text", $sData = Array())
-	PrintSettingTextSaved("message_not_started", $restart = 1, $reboot = 0, $maxlength = 160, $size = 100, $pluginName = $pluginName, $defaultValue = "Sorry, the show cannot be started right now.");
+	PrintSettingTextSaved("message_not_started", $restart = 1, $reboot = 0, $maxlength = 160, $size = 100, $pluginName = $pluginName, $defaultValue = "");
 ?>
 </td>
 </tr>
