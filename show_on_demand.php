@@ -7,41 +7,55 @@ if (file_exists($pluginConfigFile)) {
 	$pluginSettings = parse_ini_file($pluginConfigFile);
 }
 
+$madeChange = false;
+
 if (strlen(urldecode($pluginSettings['show_on_demand_enabled']))<1){
 	WriteSettingToFile("show_on_demand_enabled",urlencode("false"),$pluginName);
+	$madeChange = true;
 }
 
 if (strlen(urldecode($pluginSettings['on_demand_playlist']))<1){
 	WriteSettingToFile("on_demand_playlist",urlencode(""),$pluginName);
+	$madeChange = true;
 }
 
 if (strlen(urldecode($pluginSettings['main_playlist']))<1){
 	WriteSettingToFile("main_playlist",urlencode(""),$pluginName);
+	$madeChange = true;
 }
 
 if (strlen(urldecode($pluginSettings['voipms_api_username']))<1){
 	WriteSettingToFile("voipms_api_username",urlencode(""),$pluginName);
+	$madeChange = true;
 }
 
 if (strlen(urldecode($pluginSettings['voipms_api_password']))<1){
 	WriteSettingToFile("voipms_api_password",urlencode(""),$pluginName);
+	$madeChange = true;
 }
 
 if (strlen(urldecode($pluginSettings['start_command']))<1){
 	WriteSettingToFile("start_command",urlencode("START"),$pluginName);
+	$madeChange = true;
 }
 
 if (strlen(urldecode($pluginSettings['message_success']))<1){
 	WriteSettingToFile("message_success",urlencode("Message received. The show will begin momentarily."),$pluginName);
+	$madeChange = true;
 }
 
 if (strlen(urldecode($pluginSettings['message_not_started']))<1){
 	WriteSettingToFile("message_not_started",urlencode("Sorry, the show cannot be started right now."),$pluginName);
+	$madeChange = true;
 }
 
-// foreach ($pluginSettings as $key => $value) { 
-// 	${$key} = urldecode($value);
-// }
+if ($madeChange) {
+	$pluginSettings = parse_ini_file($pluginConfigFile);
+}
+
+foreach ($pluginSettings as $key => $value) { 
+	${$key} = urldecode($value);
+}
 
 $playlists = Array();
 foreach(scandir($playlistDirectory) as $pFile)
