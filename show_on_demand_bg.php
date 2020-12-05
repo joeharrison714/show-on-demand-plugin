@@ -8,56 +8,63 @@ $messagesCsvFile = $settings['logDirectory']."/".$pluginName."-messages.csv";
 $pluginConfigFile = $settings['configDirectory'] . "/plugin." .$pluginName;
 $pluginSettings = parse_ini_file($pluginConfigFile);
 
+$logLevel = "INFO"; #"DEBUG"
+$sleepTime = 5;
+
 #$pluginVersion = urldecode($pluginSettings['pluginVersion']);
 $sodEnabled = $pluginSettings['show_on_demand_enabled'];
 $sodEnabled = $sodEnabled == "true" ? true : false;
 
 $api_base_path = "https://voip.ms/api/v1";
 $oldest_message_age = 180;
+$last_processed_message_date = (new DateTime())->setTimestamp(0);
 
 $onDemandPlaylist = $pluginSettings['on_demand_playlist'];
 $mainPlaylist = $pluginSettings['main_playlist'];
 $voipmsApiUsername = $pluginSettings['voipms_api_username'];
 $voipmsApiPassword = $pluginSettings['voipms_api_password'];
+$voipmsDid = $pluginSettings['voipms_did'];
 $startCommand = $pluginSettings['start_command'];
 $messageSuccess = $pluginSettings['message_success'];
 $messageNotStarted = $pluginSettings['message_not_started'];
 
 if($sodEnabled == 1) {
     echo "Starting Show On Demand Plugin\n";
-    logEntry("Starting Show On Demand Plugin");
+    logInfo("Starting Show On Demand Plugin");
 
     try{
-        logEntry("On-demand playlist: " . $onDemandPlaylist);
+        logInfo("On-demand playlist: " . $onDemandPlaylist);
         if (strlen($onDemandPlaylist)==0){
             throw new Exception('No on-demand playlist specified.');
         }
 
-        logEntry("Main playlist: " . $mainPlaylist);
+        logInfo("Main playlist: " . $mainPlaylist);
         if (strlen($mainPlaylist)==0){
             throw new Exception('No main playlist specified.');
         }
 
-        logEntry("Voip.ms username: " . $voipmsApiUsername);
+        logInfo("Voip.ms username: " . $voipmsApiUsername);
         if (strlen($voipmsApiUsername)==0){
             throw new Exception('No voip.ms username specified.');
         }
 
-        logEntry("Voip.ms password: " . "<<redacted>>");
+        logInfo("Voip.ms password: " . "<<redacted>>");
         if (strlen($voipmsApiPassword)==0){
             throw new Exception('No voip.ms password specified.');
         }
 
-        logEntry("Start command: " . $startCommand);
+        logInfo("Voip.ms DID: " . $voipmsDid);
+
+        logInfo("Start command: " . $startCommand);
         if (strlen($startCommand)==0){
             throw new Exception('No start command specified.');
         }
 
-        logEntry("Success message: " . $messageSuccess);
-        logEntry("Not-started message: " . $messageNotStarted);
+        logInfo("Success message: " . $messageSuccess);
+        logInfo("Not-started message: " . $messageNotStarted);
 
     } catch (Exception $e) {
-        logEntry($e->getMessage());
+        logInfo($e->getMessage());
         die;
     }
 
@@ -66,10 +73,10 @@ if($sodEnabled == 1) {
             $fppStatus = getFppStatus();
 
             if($fppStatus->scheduler->status=="playing") {
-                logEntry("fpp is playing");
+                logDebug("fpp is playing");
 
                 $messageResponse = getMessages();
-                logEntry("API Response Status: " . $messageResponse->status);
+                logDebug("API Response Status: " . $messageResponse->status);
 
                 if ($messageResponse->status == "success"){
                     $startShowForContacts = processMessages($messageResponse);
@@ -78,15 +85,15 @@ if($sodEnabled == 1) {
 
                     if ($shouldStart) {
                         $currentlyPlaying = $fppStatus->current_playlist->playlist;
-                        logEntry("Currently playing: " . $currentlyPlaying);
+                        logInfo("Currently playing: " . $currentlyPlaying);
         
                         $canStart = false;
                         if($currentlyPlaying == $onDemandPlaylist) {
-                            logEntry("The on-demand playlist is playing"); 
+                            logInfo("The on-demand playlist is playing"); 
                             $canStart = true;
                         }
                         else{
-                            logEntry("The on-demand playlist is not playing");
+                            logInfo("The on-demand playlist is not playing");
                             $canStart = false;
                         }
 
@@ -97,21 +104,21 @@ if($sodEnabled == 1) {
                         }
                     }
                     else{
-                        logEntry("Nothing to do");
+                        logDebug("Nothing to do");
                     }
                 }
             }else {
-                logEntry("fpp is not playing");
+                logDebug("fpp is not playing");
             }
         } catch (Exception $e) {
-            logEntry('Exception: ' . $e->getMessage());
+            logInfo('Exception: ' . $e->getMessage());
         }
 
-        logEntry("Sleeping");
-        sleep(30);
+        logDebug("Sleeping");
+        sleep(5);
     }
 }else {
-    logEntry("Show On Demand Plugin is disabled");
+    logInfo("Show On Demand Plugin is disabled");
 }
 
 function startShow(){
@@ -121,13 +128,13 @@ function startShow(){
     $url = "http://127.0.0.1/api/command/Insert Playlist Immediate/" . $mainPlaylist ."/0/0/true";
     $url = str_replace(' ', '%20', $url);
 
-    logEntry("Triggering main playlist: " . $url);
+    logInfo("Triggering main playlist: " . $url);
     $result=file_get_contents($url);
-    logEntry("Result: " . $result);
+    logInfo("Result: " . $result);
 }
 
 function processMessages($messageResponse){
-    global $startCommand, $oldest_message_age;
+    global $startCommand, $oldest_message_age, $last_processed_message_date;
 
     $shouldStart = false;
 
@@ -140,17 +147,23 @@ function processMessages($messageResponse){
             $did = $item->did;
             $contact = $item->contact;
             $message = trim($item->message);
-            logEntry("Message ID: " . $id);
+            logDebug("Message ID: " . $id);
 
             $action = "ignored";
 
             $now = new DateTime('now');
             $datetime = new DateTime( $date );
             $diffInSeconds = $now->getTimestamp() - $datetime->getTimestamp();
-            logEntry("Message Age: " . $diffInSeconds);
+            logDebug("Message Age: " . $diffInSeconds);
+            logDebug("Last Processed Message Date: " . $last_processed_message_date->format('Y-m-d H:i:s'));
 
             if ($diffInSeconds > $oldest_message_age){
                 $action = "too old";
+                logDebug("Message older than oldest age");
+            }
+            elseif($datetime <= $last_processed_message_date){
+                $action = "too old";
+                logDebug("Message older than last processed message date");
             }
             else {
                 if (strcasecmp($message, $startCommand) == 0) {
@@ -159,26 +172,31 @@ function processMessages($messageResponse){
                         $action = "start show (duplicate)";
                     }
                     $shouldStart = true;
-                    //array_push($respondTo, $contact);
                     $respondTo[$contact] = $did;
                 }
                 else{
-                    logEntry("Unknown message: " . $message);
+                    logInfo("Unknown message: " . $message);
                 }
+
+                saveMessageToCsv($id, $date, $did, $contact, $message, $action);
             }
 
+            if ($datetime > $last_processed_message_date){
+                $last_processed_message_date = $datetime;
+                logDebug("Setting Last Processed Message Date to " . $last_processed_message_date->format('Y-m-d H:i:s'));
+            }
+            else{
+                logDebug("not greater than");
+            }
 
-
-            saveMessageToCsv($id, $date, $did, $contact, $message, $action);
-
-            deleteMessage($id);
+            //deleteMessage($id);
 
         } catch (Exception $e) {
-            logEntry('Failed on processing message: ' . $e->getMessage());
+            logInfo('Failed on processing message: ' . $e->getMessage());
         }
     }
 
-    logEntry("Will respond to: " . json_encode($respondTo));
+    logInfo("Will respond to: " . json_encode($respondTo));
 
     return $respondTo;
 }
@@ -186,7 +204,7 @@ function processMessages($messageResponse){
 function sendResponses($contacts, $didStart){
     global $messageNotStarted,$messageSuccess;
     foreach($contacts as $destination => $did) {
-        logEntry("Destination: " . $destination . "  DID: " . $did);
+        logInfo("Destination: " . $destination . "  DID: " . $did);
         
         $message = $messageNotStarted;
         if ($didStart){
@@ -198,25 +216,31 @@ function sendResponses($contacts, $didStart){
 }
 
 function getMessages(){
-    global $api_base_path,$voipmsApiUsername,$voipmsApiPassword;
+    global $api_base_path,$voipmsApiUsername,$voipmsApiPassword,$voipmsDid;
     $url = $api_base_path . "/rest.php";
     $options = array(
         'http' => array(
         'method'  => 'GET'
         )
     );
-    $getdata = http_build_query(
-        array(
+
+    $paramsArray = array(
         'api_username' => $voipmsApiUsername,
         'api_password' => $voipmsApiPassword,
         'method'=>'getSMS',
         'type'=>'1',
-         )
+    );
+    if (strlen($voipmsDid) > 0){
+        $paramsArray["did"] = $voipmsDid;
+    }
+
+    $getdata = http_build_query(
+        $paramsArray
     );
     $context = stream_context_create( $options );
-    //logEntry("API Request: " . $url ."?" .$getdata);
+    logDebug("API Request: " . $url ."?" .$getdata);
     $result = file_get_contents( $url ."?" .$getdata, false, $context );
-    logEntry("API response: " . $result);
+    logInfo("API response: " . $result);
     return json_decode( $result );
 }
 
@@ -236,11 +260,11 @@ function deleteMessage($id){
         'id'=>$id,
          )
     );
-    logEntry("Deleting SMS ID: " . $id);
+    logInfo("Deleting SMS ID: " . $id);
     $context = stream_context_create( $options );
-    //logEntry("API Request: " . $url ."?" .$getdata);
+    logDebug("API Request: " . $url ."?" .$getdata);
     $result = file_get_contents( $url ."?" .$getdata, false, $context );
-    logEntry("API response: " . $result);
+    logDebug("API response: " . $result);
     return json_decode( $result );
 }
 
@@ -262,11 +286,11 @@ function sendMessage($did, $destination, $message){
         'message'=>$message
          )
     );
-    logEntry("Sending SMS to: " . $destination);
+    logInfo("Sending SMS to: " . $destination);
     $context = stream_context_create( $options );
-    //logEntry("API Request: " . $url ."?" .$getdata);
+    logDebug("API Request: " . $url ."?" .$getdata);
     $result = file_get_contents( $url ."?" .$getdata, false, $context );
-    logEntry("API response: " . $result);
+    logDebug("API response: " . $result);
     return json_decode( $result );
 }
 
@@ -275,6 +299,19 @@ function getFppStatus() {
     return json_decode( $result );
   }
 
+
+function logDebug($data){
+    global $logLevel;
+    if ($logLevel == "DEBUG"){
+        logEntry($data);
+    }
+}
+function logInfo($data){
+    global $logLevel;
+    if ($logLevel == "INFO" || $logLevel == "DEBUG"){
+        logEntry($data);
+    }
+}
 function logEntry($data) {
 
 	global $logFile,$myPid;

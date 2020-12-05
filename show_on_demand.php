@@ -34,6 +34,11 @@ if (strlen(urldecode($pluginSettings['voipms_api_password']))<1){
 	$madeChange = true;
 }
 
+if (strlen(urldecode($pluginSettings['voipms_did']))<1){
+	WriteSettingToFile("voipms_did","",$pluginName);
+	$madeChange = true;
+}
+
 if (strlen(urldecode($pluginSettings['start_command']))<1){
 	WriteSettingToFile("start_command","START",$pluginName);
 	$madeChange = true;
@@ -104,6 +109,16 @@ foreach(scandir($playlistDirectory) as $pFile)
 <?
 //function PrintSettingPasswordSaved($setting, $restart = 1, $reboot = 0, $maxlength = 32, $size = 32, $pluginName = "", $defaultValue = "", $callbackName = "", $changedFunction = "")
 	PrintSettingPasswordSaved("voipms_api_password", $restart = 1, $reboot = 0, $maxlength = 50, $size = 32, $pluginName = $pluginName, $defaultValue = "");
+?>
+</td>
+</tr>
+
+<tr>
+	<th style="text-align: left">Voip.ms DID (Phone Number)<br /> (Format: 6105551234)</th>
+<td>
+<?
+//function PrintSettingPasswordSaved($setting, $restart = 1, $reboot = 0, $maxlength = 32, $size = 32, $pluginName = "", $defaultValue = "", $callbackName = "", $changedFunction = "")
+	PrintSettingTextSaved("voipms_did", $restart = 1, $reboot = 0, $maxlength = 32, $size = 32, $pluginName = $pluginName, $defaultValue = "");
 ?>
 </td>
 </tr>
