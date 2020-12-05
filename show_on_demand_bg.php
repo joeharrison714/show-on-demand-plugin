@@ -16,7 +16,7 @@ $sodEnabled = $pluginSettings['show_on_demand_enabled'];
 $sodEnabled = $sodEnabled == "true" ? true : false;
 
 $api_base_path = "https://voip.ms/api/v1";
-$oldest_message_age = 180;
+$oldest_message_age = $sleepTime * 4;
 $last_processed_message_date = (new DateTime())->setTimestamp(0);
 
 $onDemandPlaylist = $pluginSettings['on_demand_playlist'];
