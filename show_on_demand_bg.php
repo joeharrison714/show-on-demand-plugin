@@ -12,6 +12,10 @@ $pluginSettings = parse_ini_file($pluginConfigFile);
 $sodEnabled = $pluginSettings['show_on_demand_enabled'];
 $sodEnabled = $sodEnabled == "true" ? true : false;
 
+#Add code to allow selection of a random item from the playlist
+$randomItemEnabled = $pluginSettings['random_playlist_item'];
+$randomItemEnabled = $randomItemEnabled  == "true" ? true : false;
+
 $api_base_path = "https://voip.ms/api/v1";
 $oldest_message_age = 180;
 
@@ -52,6 +56,9 @@ if($sodEnabled == 1) {
         if (strlen($startCommand)==0){
             throw new Exception('No start command specified.');
         }
+
+        #Add code to print if "random item" is selected
+        logEntry("Random Item " . $randomItemEnabled);
 
         logEntry("Success message: " . $messageSuccess);
         logEntry("Not-started message: " . $messageNotStarted);
@@ -116,9 +123,17 @@ if($sodEnabled == 1) {
 
 function startShow(){
     global $mainPlaylist;
-
+    global $randomItemEnabled;
     
-    $url = "http://127.0.0.1/api/command/Insert Playlist Immediate/" . $mainPlaylist ."/0/0/true";
+    #Code to adjust the API request depending on if random item is selected or not
+    if ($randomItemEnabled == 1){
+	    $url = "http://127.0.0.1/api/command/Insert Random Item From Playlist/" . $mainPlaylist ."/true";
+        logEntry("Selecting Random Item from Playlist");
+    }
+    else{	    
+        $url = "http://127.0.0.1/api/command/Insert Playlist Immediate/" . $mainPlaylist ."/0/0/true";
+    }
+	
     $url = str_replace(' ', '%20', $url);
 
     logEntry("Triggering main playlist: " . $url);
