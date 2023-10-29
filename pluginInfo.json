@@ -11,7 +11,7 @@
 		{
 			"minFPPVersion": "4.0",
 			"maxFPPVersion": "0",
-			"branch": "RandomPlaylistItem",
+			"branch": "RandomItem",
 			"sha": "",
 			"dependencies": {
 			    "plugins": [
